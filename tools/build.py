@@ -142,7 +142,7 @@ def page(lang, cur, other, title, desc, body, lds=(), active=None, scripts=(), h
       {nav}
       <div class="nav-extra"><a class="btn primary" href="{contact}">{e(t['cta'])}</a><a class="lang" href="{o_href}" hreflang="{o_lang}" lang="{o_lang}">{o_long}</a></div>
     </nav>
-    <a class="lang" href="{o_href}" hreflang="{o_lang}" lang="{o_lang}" aria-label="{o_long}">{o_short}</a>
+    <a class="lang" href="{o_href}" hreflang="{o_lang}" lang="{o_lang}"><span aria-hidden="true">{o_short}</span><span class="sr">{o_long}</span></a>
     <a class="btn primary" href="{contact}">{e(t['cta'])}</a>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="sr">{e(t['menu'])}</span><span></span><span></span></button>
   </div>
@@ -232,7 +232,7 @@ def home(lang):
     h1 = "".join(f'<span class="l" aria-hidden="true">{e(x)}</span>' for x in t["h1"])
     foot = "".join(f"<span>{icon(i)}{e(x)}</span>" for i, x in t["hero_foot"])
     facts = "".join(f"<div><dt>{a}</dt><dd>{e(b)}</dd></div>" for a, b in t["facts"])
-    cards = "".join(f'<button class="fan-card{" front" if i == 1 else ""}" type="button" aria-label="{e(alt)}"><img src="{rel}assets/img/fafio-cv-{m}.webp" alt="{e(alt)}" width="900" height="1273" loading="lazy" decoding="async"></button>'
+    cards = "".join(f'<button class="fan-card{" front" if i == 1 else ""}" type="button"><img src="{rel}assets/img/fafio-cv-{m}.webp" alt="{e(alt)}" width="900" height="1273" loading="lazy" decoding="async"></button>'
                     for i, (m, alt) in enumerate(zip(["band", "center", "dark", "light"], t["fan_alt"])))
     pledges = "".join(f'<li class="pledge">{icon(i)}<h3>{e(a[lang])}</h3><p>{e(b[lang])}</p></li>' for i, a, b in PLEDGES)
     faq = "".join(f"<details><summary>{e(q[lang])}</summary><p>{e(a[lang])}</p></details>" for q, a in FAQ)

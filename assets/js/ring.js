@@ -12,7 +12,7 @@
   float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
   float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
     return mix(mix(h(i), h(i+vec2(1,0)), f.x), mix(h(i+vec2(0,1)), h(i+vec2(1,1)), f.x), f.y); }
-  float fbm(vec2 p){ float v = 0., a = .5; for (int i = 0; i < 4; i++){ v += a*n(p); p = p*2.03 + 7.1; a *= .5; } return v; }
+  float fbm(vec2 p){ float v = 0., a = .5; for (int i = 0; i < 3; i++){ v += a*n(p); p = p*2.03 + 7.1; a *= .5; } return v; }
   void main(){
     vec2 uv = (gl_FragCoord.xy - .5*r) / min(r.x, r.y);
     // légère perspective qui suit le pointeur
@@ -34,7 +34,7 @@
     float hl = pow(max(0., cos(a - atan(m.y, m.x + 1e-4))), 10.) * pm;
     vec3 o = col*(core*.95 + glow*.42) + vec3(1.)*hl*core*.75;
     // brume à l'intérieur de l'anneau
-    o += mix(cobalt, lagoon, .4) * .10 * smoothstep(R*1.05, 0., d) * fbm(uv*2.6 + vec2(t*.04, -t*.03));
+    o += mix(cobalt, lagoon, .4) * .10 * smoothstep(R*1.05, 0., d) * n(uv*2.6 + vec2(t*.04, -t*.03));
     // poussière de lumière
     float dust = step(.9985, h(floor(gl_FragCoord.xy*.5) + floor(t*.6))) * smoothstep(.75, .2, d);
     o += lagoon * dust * .35;
@@ -60,11 +60,13 @@
 
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   let w = 0, h = 0, raf = 0, visible = true, t0 = performance.now(), frozenAt = 12.;
+  // Qualité adaptative : on baisse la résolution puis la cadence si l'appareil peine, et on fige en dernier recours.
+  let res = 0.75, minGap = 0, last = 0, slow = 0, frames = 0, sum = 0, ready = false;
   const target = { x: 0, y: 0 }, pt = { x: 0, y: 0 };
   let scale = 1;
 
   function size() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5) * res;
     const b = canvas.getBoundingClientRect();
     w = Math.max(1, Math.round(b.width * dpr)); h = Math.max(1, Math.round(b.height * dpr));
     if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
@@ -80,20 +82,40 @@
   function loop(now) {
     raf = 0;
     if (!visible || document.hidden) return;
-    draw((now - t0) / 1000);
+    if (now - last >= minGap) {
+      const dt = last ? now - last : 16;
+      last = now;
+      draw((now - t0) / 1000);
+      // premières images : on mesure, puis on ajuste une fois pour toutes
+      frames++;
+      if (frames > 1 && frames <= 7) sum += dt;
+      if (frames === 7) {
+        const avg = sum / 6;
+        if (avg > 60) { frozen = true; return; }
+        if (avg > 22) { res = 0.5; minGap = 33; size(); }
+      } else if (frames > 7) {
+        slow = dt > minGap + 30 ? slow + 1 : Math.max(0, slow - 1);
+        if (slow > 10) { frozen = true; return; }
+      }
+    }
     raf = requestAnimationFrame(loop);
   }
+  let frozen = false;
   function start() {
-    if (still.matches) { draw(frozenAt); return; }
-    if (!raf) raf = requestAnimationFrame(loop);
+    if (!ready) return;
+    if (still.matches || frozen) { draw(frozen ? (performance.now() - t0) / 1000 : frozenAt); return; }
+    if (!raf) { last = 0; raf = requestAnimationFrame(loop); }
   }
 
   size();
   draw(still.matches ? frozenAt : 0);
   requestAnimationFrame(() => canvas.classList.add("on"));
-  start();
+  // l'animation démarre une fois la page chargée, pour ne jamais ralentir l'affichage du texte
+  const go = () => { ready = true; start(); };
+  if (document.readyState === "complete") setTimeout(go, 300);
+  else addEventListener("load", () => setTimeout(go, 300), { once: true });
 
-  new ResizeObserver(() => { size(); if (still.matches || !raf) draw(still.matches ? frozenAt : (performance.now() - t0) / 1000); }).observe(canvas);
+  new ResizeObserver(() => { size(); if (still.matches || frozen || !raf) draw(still.matches ? frozenAt : (performance.now() - t0) / 1000); }).observe(canvas);
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); }).observe(canvas);
   document.addEventListener("visibilitychange", start);
   still.addEventListener?.("change", start);
@@ -103,7 +125,7 @@
     const b = canvas.getBoundingClientRect();
     target.x = Math.max(-1, Math.min(1, ((e.clientX - b.left) / b.width) * 2 - 1));
     target.y = Math.max(-1, Math.min(1, -(((e.clientY - b.top) / b.height) * 2 - 1)));
-    if (still.matches) draw(frozenAt);
+    if (still.matches || frozen) draw(still.matches ? frozenAt : (performance.now() - t0) / 1000);
   }, { passive: true });
   hero.addEventListener("pointerleave", () => { target.x = 0; target.y = 0; });
   // l'anneau grandit un peu quand on fait défiler la page
