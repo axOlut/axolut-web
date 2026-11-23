@@ -56,7 +56,7 @@ P = {
         "about_story_h": "Notre histoire",
         "about_story": [
             "axOlut est né d'un constat simple : les entreprises africaines méritent des outils numériques aussi soignés que ceux des grandes plateformes mondiales, et adaptés à leur réalité : connexions variables, paiement mobile, publics bilingues.",
-            "Le studio a été fondé à Yaoundé par Joseph Nguedi Bessala, architecte de solutions. Il réunit conception, développement et accompagnement au même endroit, pour que chaque projet garde une vision claire du début à la fin.",
+            "Le studio a été fondé à Yaoundé. Il réunit conception, développement et accompagnement au même endroit, pour que chaque projet garde une vision claire du début à la fin.",
             "Notre propre application, FAFIO, en est la démonstration : un produit utilisé au quotidien, construit avec la même exigence que nous mettons dans les projets de nos clients.",
         ],
         "about_values_h": "Ce qui nous guide",
@@ -126,7 +126,7 @@ P = {
         "about_story_h": "Our story",
         "about_story": [
             "axOlut started from a simple belief: African businesses deserve digital tools as polished as those of the world's leading platforms, and suited to their reality: patchy connections, mobile payments, bilingual audiences.",
-            "The studio was founded in Yaoundé by Joseph Nguedi Bessala, a solutions architect. It brings design, development and support under one roof, so every project keeps a clear vision from start to finish.",
+            "The studio was founded in Yaoundé. It brings design, development and support under one roof, so every project keeps a clear vision from start to finish.",
             "Our own app, FAFIO, proves the point: a product used every day, built with the same care we bring to our clients' projects.",
         ],
         "about_values_h": "What guides us",

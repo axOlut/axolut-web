@@ -158,7 +158,7 @@ def page(lang, cur, other, title, desc, body, lds=(), active=None, scripts=(), h
       <div><h2>{e(t['foot_svc'])}</h2><ul>{svc_links}</ul></div>
       <div><h2>{e(t['foot_contact'])}</h2><ul>
         <li><a href="https://wa.me/{CONTACT['wa']}" target="_blank" rel="noopener">WhatsApp</a></li>
-        <li><a href="tel:{CONTACT['tel']}">{e(CONTACT['tel_label'])}</a></li>
+        <li><a href="tel:{CONTACT['tel']}">{'Appel' if lang == 'fr' else 'Call'}</a></li>
         <li><a href="mailto:{CONTACT['email']}">{e(CONTACT['email'])}</a></li>
         <li><a href="{contact}">{'Yaoundé, Cameroun' if lang == 'fr' else 'Yaoundé, Cameroon'}</a></li>
       </ul></div>
