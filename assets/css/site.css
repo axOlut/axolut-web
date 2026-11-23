@@ -328,14 +328,14 @@ textarea.field { min-height: 110px; resize: vertical; }
 .page-hero { position: relative; overflow: hidden; isolation: isolate; padding: clamp(140px, 18vw, 200px) 0 clamp(72px, 9vw, 112px); }
 .page-hero::before { content: ""; position: absolute; z-index: -2; width: 70vmax; aspect-ratio: 1; right: -25vmax; top: -35vmax; background: radial-gradient(closest-side, rgba(59, 108, 255, .22), transparent 70%); }
 .ring-deco {
-  position: absolute; z-index: -1; right: max(-120px, -8vw); top: 50%; width: min(46vw, 520px); aspect-ratio: 1; transform: translateY(-46%); border-radius: 50%; opacity: .75;
+  position: absolute; z-index: -1; right: max(-200px, -12vw); top: 50%; width: min(42vw, 500px); aspect-ratio: 1; transform: translateY(-46%); border-radius: 50%; opacity: .75;
   background: conic-gradient(from 210deg, var(--cobalt), var(--lagoon), #7E6BFA, var(--cobalt));
   -webkit-mask: radial-gradient(closest-side, transparent 88%, #000 89.5%, #000 93%, transparent 94.5%); mask: radial-gradient(closest-side, transparent 88%, #000 89.5%, #000 93%, transparent 94.5%);
   filter: drop-shadow(0 0 30px rgba(54, 209, 230, .45));
 }
 @media (prefers-reduced-motion: no-preference) { .ring-deco { animation: spin 40s linear infinite; } }
 @keyframes spin { to { transform: translateY(-46%) rotate(1turn); } }
-.page-hero h1 { font-size: clamp(2.4rem, 5.4vw, 4.4rem); max-width: 15em; margin-bottom: 24px; }
+.page-hero h1 { font-size: clamp(2.4rem, 5.4vw, 4.4rem); max-width: 12.5em; margin-bottom: 24px; }
 .page-hero .lead { max-width: 36em; }
 .page-hero .hero-actions { margin-top: 36px; }
 @media (max-width: 760px) { .ring-deco { width: 90vw; right: -45vw; top: 120px; transform: none; opacity: .45; } @keyframes spin { to { transform: rotate(1turn); } } }
