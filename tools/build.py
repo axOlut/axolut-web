@@ -101,7 +101,7 @@ def page(lang, cur, other, title, desc, body, lds=(), active=None, scripts=(), h
     home = link(lang, cur, "home")
     svc_links = "".join(f'<li><a href="{link(lang, cur, "svc:" + s[0])}">{e(s[1][lang])}</a></li>' for s in SERVICES[:6])
     nav_links = "".join(f'<li><a href="{link(lang, cur, k)}">{e(lbl)}</a></li>' for k, lbl in NAV[lang])
-    js = "".join(f'<script src="{rel}assets/js/{s}" defer></script>' for s in ("site.js", *scripts))
+    js = "".join(f'<script src="{rel}assets/js/{s}" defer></script>' for s in ("site.js", "planet.js", *scripts))
     return f"""<!doctype html>
 <html lang="{lang}">
 <head>
@@ -172,9 +172,13 @@ def page(lang, cur, other, title, desc, body, lds=(), active=None, scripts=(), h
 """
 
 
+SVC_ICON = {"sites-web": "globe", "applications-mobiles": "mobile", "logiciels-sur-mesure": "layers", "automatisation": "cog",
+            "intelligence-artificielle": "spark", "qr-codes": "qr", "documents-professionnels": "doc", "cybersecurite": "shield"}
+
+
 def svc_rows(lang, cur, items=SERVICES):
     return "".join(f"""
-      <li class="svc"><a href="{link(lang, cur, 'svc:' + slug)}"><h3>{e(name[lang])}</h3><p>{e(desc[lang])}</p><span class="go" aria-hidden="true">{icon('arrow')}</span></a></li>"""
+      <li class="svc"><a href="{link(lang, cur, 'svc:' + slug)}" data-tilt><span class="ic" aria-hidden="true">{icon(SVC_ICON[slug])}</span><h3>{e(name[lang])}</h3><p>{e(desc[lang])}</p><span class="go" aria-hidden="true">{icon('arrow')}</span></a></li>"""
                    for slug, name, desc in items)
 
 
@@ -204,7 +208,8 @@ def page_hero(lang, cur, crumbs, h1, lead, actions=""):
         for n, p in items)
     return f"""
 <section class="page-hero dark">
-  <div class="ring-deco" aria-hidden="true"></div>
+  <canvas class="sky" data-sky="mini" aria-hidden="true"></canvas>
+  <div class="veil" aria-hidden="true"></div>
   <div class="wrap">
     <nav class="crumbs" aria-label="{'Fil d’Ariane' if lang == 'fr' else 'Breadcrumb'}"><ol>{nav}</ol></nav>
     <h1>{e(h1)}</h1>
@@ -229,7 +234,7 @@ def home(lang):
         {"@type": "Question", "name": q[lang], "acceptedAnswer": {"@type": "Answer", "text": a[lang]}} for q, a in FAQ]}
     site_ld = {"@context": "https://schema.org", "@type": "WebSite", "name": "axOlut", "url": f"{SITE}/", "inLanguage": ["fr", "en"], "publisher": {"@id": f"{SITE}/#org"}}
 
-    h1 = "".join(f'<span class="l" aria-hidden="true">{e(x)}</span>' for x in t["h1"])
+    h1 = "".join(f'<span class="l grad" aria-hidden="true">{e(x)}</span>' for x in t["h1"])
     foot = "".join(f"<span>{icon(i)}{e(x)}</span>" for i, x in t["hero_foot"])
     facts = "".join(f"<div><dt>{a}</dt><dd>{e(b)}</dd></div>" for a, b in t["facts"])
     cards = "".join(f'<button class="fan-card{" front" if i == 1 else ""}" type="button"><img src="{rel}assets/img/fafio-cv-{m}.webp" alt="{e(alt)}" width="900" height="1273" loading="lazy" decoding="async"></button>'
@@ -238,17 +243,18 @@ def home(lang):
     faq = "".join(f"<details><summary>{e(q[lang])}</summary><p>{e(a[lang])}</p></details>" for q, a in FAQ)
     clock_where, c_open, c_closed = t["clock"]
     hrefs = {"wa": f"https://wa.me/{CONTACT['wa']}", "phone": f"tel:{CONTACT['tel']}", "mail": f"mailto:{CONTACT['email']}"}
-    ways = "".join(f'<li><a href="{hrefs[i]}"{" target=\"_blank\" rel=\"noopener\"" if i == "wa" else ""}>{icon(i)}<span><strong>{e(a)}</strong><small>{e(b)}</small></span></a></li>' for i, a, b in t["ways"])
+    ways = "".join(f'<li><a href="{hrefs[i]}"{" target=\"_blank\" rel=\"noopener\"" if i == "wa" else ""}><span class="ci">{icon(i)}</span><span><strong>{e(a)}</strong><small>{e(b)}</small></span></a></li>' for i, a, b in t["ways"])
     chips_t = "".join(f'<label class="chip"><input type="checkbox" name="type" value="{e(x)}"><span>{e(x)}</span></label>' for x in t["b_types"])
     chips_w = "".join(f'<label class="chip"><input type="radio" name="when" value="{e(x)}"><span>{e(x)}</span></label>' for x in t["b_whens"])
     fafio = link(lang, cur, "fafio")
 
     body = f"""
 <section class="hero dark" aria-labelledby="h1">
-  <canvas class="hero-canvas" data-ring aria-hidden="true"></canvas>
-  <div class="ring-css" aria-hidden="true"></div>
+  <canvas class="sky" data-sky aria-hidden="true"></canvas>
+  <div class="veil" aria-hidden="true"></div>
   <div class="wrap">
     <div class="hero-text">
+      <p class="pill"><i></i>{e(t['pill'])}</p>
       <h1 id="h1"><span class="sr">{e(t['h1_sr'])}</span>{h1}</h1>
       <p class="lead">{e(t['lead'])}</p>
       <div class="hero-actions">
@@ -297,8 +303,8 @@ def home(lang):
   </div>
 </section>
 
-<section class="dark"><div class="section">
-  <div class="wrap approach">
+<section class="section tight"><div class="wrap">
+  <div class="panel approach">
     <div class="approach-intro"><h2>{e(t['appr_h'])}</h2><p class="lead">{e(t['appr_lead'])}</p></div>
     <ul class="pledges">{pledges}</ul>
   </div>
@@ -311,7 +317,7 @@ def home(lang):
   </div>
 </section>
 
-<section class="dark" id="contact" aria-labelledby="contact-h"><div class="section">
+<section id="contact" aria-labelledby="contact-h"><div class="section">
   <div class="wrap contact-grid">
     <div>
       <h2 id="contact-h">{e(t['contact_h'])}</h2>
@@ -334,7 +340,7 @@ def home(lang):
     </form>
   </div>
 </div></section>"""
-    return page(lang, cur, other, t["title"], t["desc"], body, (site_ld, faq_ld), scripts=("ring.js",))
+    return page(lang, cur, other, t["title"], t["desc"], body, (site_ld, faq_ld), scripts=())
 
 
 # ---------------------------------------------------------------- services
@@ -404,7 +410,7 @@ def service_page(lang, slug):
 <section class="section tight">
   <div class="wrap">
     <div class="section-head"><h2>{e(p['svc_related'])}</h2></div>
-    <ul class="services">{svc_rows(lang, cur, related)}
+    <ul class="services three">{svc_rows(lang, cur, related)}
     </ul>
   </div>
 </section>""" + cta_band(lang, cur)
@@ -440,7 +446,7 @@ def fafio_page(lang):
     </div>
   </div>
 </section>
-<section class="dark"><div class="section">
+<section><div class="section tight">
   <div class="wrap">
     <div class="section-head"><h2>{e(p['fafio_screens_h'])}</h2><p class="lead">{e(p['fafio_screens_p'])}</p></div>
     <div class="shots">{shots}</div>
@@ -484,8 +490,8 @@ def about_page(lang):
     <div class="prose-block">{''.join(f'<p class="prose">{e(x)}</p>' for x in p['about_story'])}</div>
   </div>
 </section>
-<section class="dark"><div class="section">
-  <div class="wrap approach">
+<section class="section tight"><div class="wrap">
+  <div class="panel approach">
     <div class="approach-intro"><h2>{e(p['about_values_h'])}</h2><p class="lead">{e(p['about_values_p'])}</p></div>
     <ul class="pledges">{values}</ul>
   </div>

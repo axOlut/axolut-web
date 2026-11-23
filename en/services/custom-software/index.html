@@ -48,7 +48,8 @@
 <main id="main">
 
 <section class="page-hero dark">
-  <div class="ring-deco" aria-hidden="true"></div>
+  <canvas class="sky" data-sky="mini" aria-hidden="true"></canvas>
+  <div class="veil" aria-hidden="true"></div>
   <div class="wrap">
     <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../../../en/">Home</a></li><li><a href="../../../en/services/">Services</a></li><li aria-current="page">Custom software</li></ol></nav>
     <h1>Custom software</h1>
@@ -77,10 +78,10 @@
 <section class="section tight">
   <div class="wrap">
     <div class="section-head"><h2>Related services</h2></div>
-    <ul class="services">
-      <li class="svc"><a href="../../../en/services/automation/"><h3>Automation</h3><p>Reminders, reports, syncs: repetitive work handed to processes that run on their own.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
-      <li class="svc"><a href="../../../en/services/artificial-intelligence/"><h3>Artificial intelligence</h3><p>Assistants, document generation and data analysis, built straight into your tools.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
-      <li class="svc"><a href="../../../en/services/qr-codes/"><h3>Smart QR codes</h3><p>QR codes you can edit after printing, in your brand colours, with scan tracking.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
+    <ul class="services three">
+      <li class="svc"><a href="../../../en/services/automation/" data-tilt><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M2.5 12h3M18.5 12h3M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg></span><h3>Automation</h3><p>Reminders, reports, syncs: repetitive work handed to processes that run on their own.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
+      <li class="svc"><a href="../../../en/services/artificial-intelligence/" data-tilt><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.4 2.6 6.4 7 7-4.4.6-6.4 2.6-7 7-.6-4.4-2.6-6.4-7-7 4.4-.6 6.4-2.6 7-7Z"/><path d="M19 15.5c.2 1.6.9 2.3 2.5 2.5-1.6.2-2.3.9-2.5 2.5-.2-1.6-.9-2.3-2.5-2.5 1.6-.2 2.3-.9 2.5-2.5Z"/></svg></span><h3>Artificial intelligence</h3><p>Assistants, document generation and data analysis, built straight into your tools.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
+      <li class="svc"><a href="../../../en/services/qr-codes/" data-tilt><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="6" height="6" rx="1.2"/><rect x="14.5" y="3.5" width="6" height="6" rx="1.2"/><rect x="3.5" y="14.5" width="6" height="6" rx="1.2"/><path d="M14.5 14.5h2v2h-2zM18.5 18.5h2v2h-2zM18.5 14.5h2M14.5 19.5v1"/></svg></span><h3>Smart QR codes</h3><p>QR codes you can edit after printing, in your brand colours, with scan tracking.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
     </ul>
   </div>
 </section>
@@ -110,6 +111,6 @@
     <div class="foot-base"><span>© <span data-year>2026</span> axOlut. All rights reserved.</span><span>Designed and built by axOlut in Yaoundé.</span></div>
   </div>
 </footer>
-<script src="../../../assets/js/site.js" defer></script>
+<script src="../../../assets/js/site.js" defer></script><script src="../../../assets/js/planet.js" defer></script>
 </body>
 </html>

@@ -80,5 +80,20 @@
     }));
   });
 
+  // Cartes de service : légère inclinaison 3D et reflet qui suivent le pointeur
+  if (matchMedia("(hover: hover) and (prefers-reduced-motion: no-preference)").matches) {
+    $$("[data-tilt]").forEach((card) => {
+      card.addEventListener("pointermove", (ev) => {
+        const b = card.getBoundingClientRect();
+        const x = (ev.clientX - b.left) / b.width, y = (ev.clientY - b.top) / b.height;
+        card.style.setProperty("--mx", `${x * 100}%`);
+        card.style.setProperty("--my", `${y * 100}%`);
+        card.style.setProperty("--rx", `${(0.5 - y) * 8}deg`);
+        card.style.setProperty("--ry", `${(x - 0.5) * 10}deg`);
+      });
+      card.addEventListener("pointerleave", () => { card.style.setProperty("--rx", "0deg"); card.style.setProperty("--ry", "0deg"); });
+    });
+  }
+
   $$("[data-year]").forEach((y) => (y.textContent = new Date().getFullYear()));
 })();

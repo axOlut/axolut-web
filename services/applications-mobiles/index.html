@@ -48,7 +48,8 @@
 <main id="main">
 
 <section class="page-hero dark">
-  <div class="ring-deco" aria-hidden="true"></div>
+  <canvas class="sky" data-sky="mini" aria-hidden="true"></canvas>
+  <div class="veil" aria-hidden="true"></div>
   <div class="wrap">
     <nav class="crumbs" aria-label="Fil d’Ariane"><ol><li><a href="../../">Accueil</a></li><li><a href="../../services/">Services</a></li><li aria-current="page">Applications mobiles</li></ol></nav>
     <h1>Développement d’applications mobiles</h1>
@@ -84,10 +85,10 @@
 <section class="section tight">
   <div class="wrap">
     <div class="section-head"><h2>Services liés</h2></div>
-    <ul class="services">
-      <li class="svc"><a href="../../services/logiciels-sur-mesure/"><h3>Logiciels sur mesure</h3><p>Outils métier, tableaux de bord et espaces clients, construits autour de votre façon de travailler.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
-      <li class="svc"><a href="../../services/automatisation/"><h3>Automatisation</h3><p>Relances, rapports, synchronisations : les tâches répétitives confiées à des processus qui tournent seuls.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
-      <li class="svc"><a href="../../services/intelligence-artificielle/"><h3>Intelligence artificielle</h3><p>Assistants, génération de documents et analyse de données, intégrés directement à vos outils.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
+    <ul class="services three">
+      <li class="svc"><a href="../../services/logiciels-sur-mesure/" data-tilt><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span><h3>Logiciels sur mesure</h3><p>Outils métier, tableaux de bord et espaces clients, construits autour de votre façon de travailler.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
+      <li class="svc"><a href="../../services/automatisation/" data-tilt><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M2.5 12h3M18.5 12h3M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg></span><h3>Automatisation</h3><p>Relances, rapports, synchronisations : les tâches répétitives confiées à des processus qui tournent seuls.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
+      <li class="svc"><a href="../../services/intelligence-artificielle/" data-tilt><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.4 2.6 6.4 7 7-4.4.6-6.4 2.6-7 7-.6-4.4-2.6-6.4-7-7 4.4-.6 6.4-2.6 7-7Z"/><path d="M19 15.5c.2 1.6.9 2.3 2.5 2.5-1.6.2-2.3.9-2.5 2.5-.2-1.6-.9-2.3-2.5-2.5 1.6-.2 2.3-.9 2.5-2.5Z"/></svg></span><h3>Intelligence artificielle</h3><p>Assistants, génération de documents et analyse de données, intégrés directement à vos outils.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></li>
     </ul>
   </div>
 </section>
@@ -117,6 +118,6 @@
     <div class="foot-base"><span>© <span data-year>2026</span> axOlut. Tous droits réservés.</span><span>Conçu et développé par axOlut à Yaoundé.</span></div>
   </div>
 </footer>
-<script src="../../assets/js/site.js" defer></script>
+<script src="../../assets/js/site.js" defer></script><script src="../../assets/js/planet.js" defer></script>
 </body>
 </html>
