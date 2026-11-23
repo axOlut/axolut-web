@@ -10,7 +10,7 @@
 
   const vs = "attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }";
   const fs = `precision highp float;
-  uniform vec2 r; uniform float t; uniform vec2 m; uniform vec3 P; uniform float k; uniform float px;
+  uniform vec2 r; uniform float t; uniform vec2 m; uniform vec3 P; uniform float k; uniform float px; uniform float lt;
   float h21(vec2 p){ p = fract(p*vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x*p.y); }
   float h31(vec3 p){ p = fract(p*.3183099 + .1); p *= 17.; return fract(p.x*p.y*p.z*(p.x + p.y + p.z)); }
   float n3(vec3 x){ vec3 i = floor(x), f = fract(x); f = f*f*(3. - 2.*f);
@@ -43,7 +43,7 @@
 
   void main(){
     vec2 uv = (gl_FragCoord.xy - .5*r)/r.y;
-    vec3 col = stars(gl_FragCoord.xy/px)*.9;
+    vec3 col = stars(gl_FragCoord.xy/px)*mix(.9, .55, lt);
     vec2 q = (uv - P.xy)/P.z;
     float d = length(q);
     vec3 holo = vec3(.32, .86, 1.);
@@ -98,7 +98,14 @@
 
     col *= k;
     float al = clamp(max(col.r, max(col.g, col.b)), 0., 1.);
-    gl_FragColor = vec4(col, al);
+    if (lt > .5){
+      // thème clair : la lumière devient une encre bleue posée sur le fond
+      float a = clamp(al*1.2, 0., 1.);
+      vec3 ink = mix(vec3(.08, .27, .80), vec3(.02, .55, .74), clamp(col.g*1.4 - col.b*.7, 0., 1.));
+      gl_FragColor = vec4(ink*a, a);
+    } else {
+      gl_FragColor = vec4(col, al);
+    }
   }`;
 
   const sh = (type, src) => { const x = gl.createShader(type); gl.shaderSource(x, src); gl.compileShader(x); return x; };
@@ -114,7 +121,8 @@
   gl.enableVertexAttribArray(loc);
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   const U = (n) => gl.getUniformLocation(prog, n);
-  const uR = U("r"), uT = U("t"), uM = U("m"), uP = U("P"), uK = U("k"), uPx = U("px");
+  const uR = U("r"), uT = U("t"), uM = U("m"), uP = U("P"), uK = U("k"), uPx = U("px"), uLt = U("lt");
+  const darkQ = matchMedia("(prefers-color-scheme: dark)");
 
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   let w = 0, h = 0, raf = 0, visible = true, ready = false, frozen = false;
@@ -125,8 +133,10 @@
 
   function layout() {
     const a = w / h, wide = innerWidth > 900;
-    if (mini) { planet = wide ? [a * .5 - .30, -.02, .30] : [a * .32, .22, a * .36]; glow = wide ? .62 : .4; }
-    else { planet = wide ? [a * .5 - .40, -.02, .40] : [0, .25, a * .44]; glow = wide ? .66 : .55; }
+    // ordinateur : planète à droite du texte ; téléphone : planète centrée, derrière le texte
+    if (mini) { planet = wide ? [a * .5 - .30, -.02, .30] : [a * .22, .06, Math.min(a * .46, .36)]; glow = wide ? .62 : .5; }
+    else { planet = wide ? [a * .5 - .40, -.02, .40] : [0, .1, Math.min(a * .58, .42)]; glow = wide ? .66 : .6; }
+    if (!darkQ.matches) glow *= wide ? .85 : .9;
   }
   function size() {
     dpr = Math.min(window.devicePixelRatio || 1, 1.5) * res;
@@ -138,7 +148,7 @@
   function draw(time) {
     pt.x += (target.x - pt.x) * .05; pt.y += (target.y - pt.y) * .05;
     gl.uniform2f(uR, w, h); gl.uniform1f(uT, time); gl.uniform2f(uM, pt.x, pt.y);
-    gl.uniform3f(uP, planet[0], planet[1], planet[2]); gl.uniform1f(uK, glow); gl.uniform1f(uPx, dpr);
+    gl.uniform3f(uP, planet[0], planet[1], planet[2]); gl.uniform1f(uK, glow); gl.uniform1f(uPx, dpr); gl.uniform1f(uLt, darkQ.matches ? 0 : 1);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
   const now = () => (performance.now() - t0) / 1000;
@@ -179,6 +189,7 @@
   new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) start(); }).observe(canvas);
   document.addEventListener("visibilitychange", start);
   still.addEventListener?.("change", start);
+  darkQ.addEventListener?.("change", () => { layout(); draw(still.matches ? frozenAt : now()); });
 
   const zone = canvas.parentElement;
   zone.addEventListener("pointermove", (ev) => {

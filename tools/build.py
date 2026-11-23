@@ -113,7 +113,9 @@ def page(lang, cur, other, title, desc, body, lds=(), active=None, scripts=(), h
 <link rel="alternate" hreflang="fr" href="{SITE}/{fr_path}">
 <link rel="alternate" hreflang="en" href="{SITE}/{en_path}">
 <link rel="alternate" hreflang="x-default" href="{SITE}/{fr_path}">
-<meta name="theme-color" content="#050C1F">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F5F8FD" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#040A1C" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="axOlut">
 <meta property="og:title" content="{e(title)}">
