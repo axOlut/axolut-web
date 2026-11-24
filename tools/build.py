@@ -23,6 +23,12 @@ SITE = os.environ.get("SITE_URL", "https://axolut.github.io/axolut-web").rstrip(
 PAGES = []  # (fr_path, en_path) pour le plan du site
 
 
+import hashlib as _hl
+def ver(rel_asset):
+    """Empreinte courte du fichier : chaque modification change l'adresse, le navigateur recharge."""
+    with open(os.path.join(ROOT, "assets", rel_asset), "rb") as f:
+        return _hl.sha1(f.read()).hexdigest()[:8]
+
 def e(s):
     """Échappe le texte et applique la typographie : apostrophe courbe, espaces fines insécables."""
     s = str(s).replace("'", "’")
@@ -101,7 +107,7 @@ def page(lang, cur, other, title, desc, body, lds=(), active=None, scripts=(), h
     home = link(lang, cur, "home")
     svc_links = "".join(f'<li><a href="{link(lang, cur, "svc:" + s[0])}">{e(s[1][lang])}</a></li>' for s in SERVICES[:6])
     nav_links = "".join(f'<li><a href="{link(lang, cur, k)}">{e(lbl)}</a></li>' for k, lbl in NAV[lang])
-    js = "".join(f'<script src="{rel}assets/js/{s}" defer></script>' for s in ("site.js", "planet.js", *scripts))
+    js = "".join(f'<script src="{rel}assets/js/{s}?v={ver('js/'+s)}" defer></script>' for s in ("site.js", "planet.js", *scripts))
     return f"""<!doctype html>
 <html lang="{lang}">
 <head>
@@ -132,7 +138,7 @@ def page(lang, cur, other, title, desc, body, lds=(), active=None, scripts=(), h
 <link rel="manifest" href="{rel}site.webmanifest">
 <link rel="preload" href="{rel}assets/fonts/sora.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="{rel}assets/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="{rel}assets/css/site.css">
+<link rel="stylesheet" href="{rel}assets/css/site.css?v={ver('css/site.css')}">
 {ld}
 </head>
 <body>
@@ -518,7 +524,7 @@ def not_found():
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Page introuvable | axOlut</title><meta name="robots" content="noindex">
 <link rel="icon" href="{root}assets/img/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="{root}assets/css/site.css"></head>
+<link rel="stylesheet" href="{root}assets/css/site.css?v={ver('css/site.css')}"></head>
 <body class="dark nf">
 <main class="wrap nf-main">
   <a class="logo" href="{root}" aria-label="axOlut">ax<span class="o" aria-hidden="true"></span>lut</a>
