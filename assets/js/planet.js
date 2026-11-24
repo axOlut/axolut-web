@@ -10,7 +10,7 @@
 
   const vs = "attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }";
   const fs = `precision highp float;
-  uniform vec2 r; uniform float t; uniform vec2 m; uniform vec3 P; uniform float k; uniform float px; uniform float lt;
+  uniform vec2 r; uniform float t; uniform vec2 m; uniform vec3 P; uniform float k; uniform float px; uniform float lt; uniform float hal; uniform float ring;
   float h21(vec2 p){ p = fract(p*vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x*p.y); }
   float h31(vec3 p){ p = fract(p*.3183099 + .1); p *= 17.; return fract(p.x*p.y*p.z*(p.x + p.y + p.z)); }
   float n3(vec3 x){ vec3 i = floor(x), f = fract(x); f = f*f*(3. - 2.*f);
@@ -49,7 +49,7 @@
     vec3 holo = vec3(.32, .86, 1.);
 
     // halo de l'atmosphère
-    col += vec3(.18, .45, 1.)*.55*exp(-max(d - 1., 0.)*5.5)*smoothstep(.2, 1., d);
+    col += vec3(.18, .45, 1.)*.55*hal*exp(-max(d - 1., 0.)*5.5)*smoothstep(.2, 1., d);
 
     if (d < 1.){
       col *= .15;
@@ -70,16 +70,17 @@
                      smoothstep(wF, 0., abs(fract(latB/stepT + .5) - .5)*stepT));
       // continents en points lumineux
       float land = n3(nf*2.1)*.62 + n3(nf*4.7)*.28 + n3(nf*10.)*.1;
-      vec2 cell = vec2(lonF*cos(latF), latF)*24.;
+      float den = 24.*max(1., P.z/.42);
+      vec2 cell = vec2(lonF*cos(latF), latF)*den;
       float dotm = smoothstep(.30, .14, length(fract(cell) - .5))*smoothstep(.50, .56, land);
       float landB = n3(nb*2.1)*.62 + n3(nb*4.7)*.28 + n3(nb*10.)*.1;
-      vec2 cellB = vec2(lonB*cos(latB), latB)*24.;
+      vec2 cellB = vec2(lonB*cos(latB), latB)*den;
       float dotB = smoothstep(.30, .14, length(fract(cellB) - .5))*smoothstep(.50, .56, landB);
       float fres = pow(1. - z, 2.4);
       float light = .35 + .65*clamp(dot(normalize(vec3(q, z)), normalize(vec3(-.5 + m.x*.4, .45 + m.y*.3, .75))), 0., 1.);
       vec3 base = vec3(.03, .08, .22)*(.4 + .6*z);
-      col += base + holo*(gF*.42*light + gB*.10 + dotm*.6*light + dotB*.16 + fres*.75);
-      col *= .86 + .14*sin(gl_FragCoord.y/px*1.3 - t*5.);
+      col += base*(1. - lt*.6) + holo*(gF*.42*light + gB*.10 + dotm*mix(.6, .42, lt)*light + dotB*.16 + fres*mix(.75, .55, lt));
+      col *= 1. - mix(.14, .05, lt)*(.5 - .5*sin(gl_FragCoord.y/px*1.3 - t*5.));
     }
 
     // anneau d'orbite et satellite
@@ -88,13 +89,13 @@
     float ed = abs(length(rq/ab) - 1.)*ab.y;
     float behind = step(0., rq.y)*step(d, 1.);
     float ringW = 1.2/(P.z*r.y/px);
-    col += vec3(.36, .78, 1.)*smoothstep(ringW*1.6, 0., ed)*.55*(1. - behind);
-    col += vec3(.36, .78, 1.)*smoothstep(ringW*10., 0., ed)*.08*(1. - behind);
+    col += vec3(.36, .78, 1.)*smoothstep(ringW*1.6, 0., ed)*.55*ring*(1. - behind);
+    col += vec3(.36, .78, 1.)*smoothstep(ringW*10., 0., ed)*.08*ring*(1. - behind);
     float an = t*.35;
     vec2 sp = vec2(cos(an), sin(an))*ab;
     float sHide = step(0., sp.y)*step(length(sp), 1.);
     float sd = length(rq - sp);
-    col += vec3(.7, .95, 1.)*(exp(-sd*sd*900.) + .25*exp(-sd*sd*60.))*(1. - sHide);
+    col += vec3(.7, .95, 1.)*(exp(-sd*sd*900.) + .25*exp(-sd*sd*60.))*ring*(1. - sHide);
 
     col *= k;
     float al = clamp(max(col.r, max(col.g, col.b)), 0., 1.);
@@ -121,22 +122,33 @@
   gl.enableVertexAttribArray(loc);
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   const U = (n) => gl.getUniformLocation(prog, n);
-  const uR = U("r"), uT = U("t"), uM = U("m"), uP = U("P"), uK = U("k"), uPx = U("px"), uLt = U("lt");
+  const uR = U("r"), uT = U("t"), uM = U("m"), uP = U("P"), uK = U("k"), uPx = U("px"), uLt = U("lt"), uHal = U("hal"), uRing = U("ring");
   const darkQ = matchMedia("(prefers-color-scheme: dark)");
+  const forced = canvas.dataset.theme; // "light" ou "dark" si la page impose son thème
+  const isDark = () => forced ? forced === "dark" : darkQ.matches;
 
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   let w = 0, h = 0, raf = 0, visible = true, ready = false, frozen = false;
   let res = 0.8, minGap = 0, last = 0, frames = 0, sum = 0, slow = 0, dpr = 1;
   const t0 = performance.now(), frozenAt = 20;
   const target = { x: 0, y: 0 }, pt = { x: 0, y: 0 };
-  let planet = [0, 0, .4], glow = 1;
+  let planet = [0, 0, .4], glow = 1, halo = 1, ringOn = 1;
+  const mode = canvas.dataset.sky;
 
   function layout() {
     const a = w / h, wide = innerWidth > 900;
     // ordinateur : planète à droite du texte ; téléphone : planète centrée, derrière le texte
+    halo = isDark() ? 1 : .35; ringOn = 1;
+    if (mode === "horizon") { // grande planète qui se lève en bas de l'écran
+      const R = wide ? Math.max(a * .62, .95) : .62;
+      planet = [0, (wide ? -.1 : -.24) - R, R]; glow = isDark() ? .7 : .8; halo *= 1.4; return;
+    }
+    if (mode === "full") { // planète centrée derrière le texte, sur tous les écrans
+      planet = wide ? [a * .5 - .42, 0, .44] : [0, .06, Math.min(a * .6, .42)]; glow = isDark() ? .6 : .75; return;
+    }
     if (mini) { planet = wide ? [a * .5 - .30, -.02, .30] : [a * .22, .06, Math.min(a * .46, .36)]; glow = wide ? .62 : .5; }
     else { planet = wide ? [a * .5 - .40, -.02, .40] : [0, .1, Math.min(a * .58, .42)]; glow = wide ? .66 : .6; }
-    if (!darkQ.matches) glow *= wide ? .85 : .9;
+    if (!isDark()) glow *= wide ? .85 : .9;
   }
   function size() {
     dpr = Math.min(window.devicePixelRatio || 1, 1.5) * res;
@@ -148,7 +160,7 @@
   function draw(time) {
     pt.x += (target.x - pt.x) * .05; pt.y += (target.y - pt.y) * .05;
     gl.uniform2f(uR, w, h); gl.uniform1f(uT, time); gl.uniform2f(uM, pt.x, pt.y);
-    gl.uniform3f(uP, planet[0], planet[1], planet[2]); gl.uniform1f(uK, glow); gl.uniform1f(uPx, dpr); gl.uniform1f(uLt, darkQ.matches ? 0 : 1);
+    gl.uniform3f(uP, planet[0], planet[1], planet[2]); gl.uniform1f(uK, glow); gl.uniform1f(uPx, dpr); gl.uniform1f(uLt, isDark() ? 0 : 1); gl.uniform1f(uHal, halo); gl.uniform1f(uRing, ringOn);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
   const now = () => (performance.now() - t0) / 1000;
